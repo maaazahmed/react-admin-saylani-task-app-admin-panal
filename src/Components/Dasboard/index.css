@@ -1,0 +1,87 @@
+
+  .dashboard-container{
+      /* background-color: green; */
+      width: 100%;
+      height: 100vh;
+  }
+
+
+.buttons{
+  background: rgb(255, 255, 255);
+  height: 30px;
+  border: none;
+  outline: none;
+  color: #512da7;
+  border-radius: 2px;
+  width: 110px;
+  transition: background, color 0.5s,
+  
+}
+
+.buttons:hover{
+  background: #512da7;
+  color: #ffffff;
+  border: 1px #ffffff solid;
+  cursor: pointer
+
+}
+
+.buttons:active{
+  height: 29px;
+  width: 109px;
+
+}
+
+
+a:-webkit-any-link {
+  color: -webkit-link;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+
+
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  height: 100%;
+  width: 300px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #f0f0f0;
+  overflow-x: hidden;
+  padding-top: 20px;
+  margin-top: 65px
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+/*  */
+.main {
+  margin-left: 20%;
+   /* Same as the width of the sidenav */
+  /* Increased text to enable scrolling */
+  /* padding: 0px 10px; */
+  width:80%;
+  height: 100%;
+  /* margin-top: 65px */
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}

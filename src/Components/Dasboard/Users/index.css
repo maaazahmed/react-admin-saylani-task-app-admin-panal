@@ -1,0 +1,71 @@
+.UserContainer{
+    background: rgb(235, 235, 235);
+    width: 90%;
+    margin:3% auto;
+    padding: 15px;
+    border-radius: 3px;
+    border: solid 1px #c7c7c7;
+}
+
+
+.MuiPaper-elevation2-88 {
+    box-shadow: none !important ;
+}
+
+.chatBoxContainer{
+    height: 420px;
+    width: 330px;
+    background: #ffffff;
+    position: absolute;
+    bottom:0;
+    left: 40%;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 0px 18px #888888;
+
+}
+
+.headingContainer{
+    background: #512da7  ;
+    display: flex;
+    justify-content: space-between;
+    height: 40px ;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    
+   
+}
+
+.messagelisContainer{
+ flex: 1;
+ /* background-color: aqua */
+}
+
+
+.inputBoxContainer{
+    /* background: #cf0000; */
+    height: 45px;
+    border-top: 1px #aaaaaa solid;
+    display: flex;
+    flex-direction: column
+}
+
+.messageInput {
+   height: 100%;
+   width: 100%;
+   display: flex;
+}
+
+
+
+.messageInputText{
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 8px;
+     width: 100%
+
+
+}
