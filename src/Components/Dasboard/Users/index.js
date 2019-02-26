@@ -10,6 +10,8 @@ import { connect } from 'react-redux'
 import Button from '@material-ui/core/Button';
 import firebase from "firebase"
 import { selectedUserForMsg_Action, messageListAction, userListAction } from "../../../store/action/action"
+// import ScrollableFeed from 'react-scrollable-feed'
+import StayScrolled from 'react-stay-scrolled';
 
 
 class UserList extends Component {
@@ -67,7 +69,6 @@ class UserList extends Component {
     //         senderId: currentUser.uid,
     //         reseverId: resever.uid,
     //     }
-
     //     let arr = []
     //     database.child(`rooms/${obj.senderId}/messages/${obj.reseverId}/`).on("value", (snap) => {
     //         var messages = snap.val()
@@ -83,40 +84,75 @@ class UserList extends Component {
 
 
     onpenChatBox(data) {
+        const database = firebase.database().ref("/")
+        const currentUser = this.props.currentUser.currentUser;
+        const resever = data
+        const obj = {
+            senderId: currentUser.uid,
+            reseverId: resever.uid,
+            messageText: this.state.messageText
+        }
         this.props.selectedUserForMsg_Action(data)
         this.setState({
             chatBoxShow: true,
             userForMesg: data.username
         })
+        database.child(`rooms/${obj.senderId}/messages/${obj.reseverId}/`).on("value", (snap) => {
+            var arr = []
+            const msg = snap.val()
+            for (var key in msg) {
+                arr.push({ ...msg[key], key })
+            }
+            //  console.log(arr,"Maaz Ahmed")
+            this.props.messageListAction(arr)
+        })
     }
 
-    // _onChange(ev) {
-    //     this.setState({
-    //         messageText: ev.target.value
-    //     })
-    // }
-    // sendessage(e) {
-    //     const database = firebase.database().ref("/")
-    //     e.preventDefault();
-    //     const currentUser = this.props.currentUser.currentUser;
-    //     const resever = this.props.selectedUser.selectedUserForMsg
-    //     const obj = {
-    //         senderId: currentUser.uid,
-    //         reseverId: resever.uid,
-    //         messageText: this.state.messageText
-    //     }
-    //     database.child(`rooms/${obj.senderId}/messages/${obj.reseverId}/`).push(obj)
-    //     database.child(`rooms/${obj.reseverId}/messages/${obj.senderId}/`).push(obj)
+    _onChange(ev) {
+        this.setState({
+            messageText: ev.target.value
+        })
+    }
+    sendessage(e) {
+        const database = firebase.database().ref("/")
+        e.preventDefault();
+        const currentUser = this.props.currentUser.currentUser;
+        const resever = this.props.selectedUser.selectedUserForMsg
+        const obj = {
+            senderId: currentUser.uid,
+            reseverId: resever.uid,
+            messageText: this.state.messageText
+        }
+        database.child(`rooms/${obj.senderId}/messages/${obj.reseverId}/`).push(obj)
+        database.child(`rooms/${obj.reseverId}/messages/${obj.senderId}/`).push(obj)
+        this.setState({
+            messageText: "",
+        })
+    }
 
-
-    // }
-
-
-
+    deleteUser(data) {
+        fetch("http://localhost:8000/deleteUser", {
+            method: "post",
+            body:JSON.stringify({uid:data.uid}),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then((res) => {
+            res.json().then((data)=>{
+                console.log(data)
+                alert(data.Message)
+            })
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
 
 
     render() {
-        console.log(this.props.messageList)
+        const messaageList = this.props.messageList.messaageList
+        const currentUser = this.props.currentUser.currentUser;
+
         return (
             <div className="UserContainer"   >
                 <Paper >
@@ -127,14 +163,13 @@ class UserList extends Component {
                                 <TableCell align="center">Email</TableCell>
                                 <TableCell align="center">Phone No</TableCell>
                                 <TableCell align="center">Status</TableCell>
-                                {/* <TableCell align="center">Message</TableCell> */}
+                                <TableCell align="center">Message</TableCell>
+                                <TableCell align="center">Delete</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {this.props.user_List.userList.map((row, index) => {
-                                console.log(row.status == "Active")
                                 return (
-
                                     <TableRow key={index}>
                                         <TableCell component="th" scope="row">
                                             {row.username}
@@ -143,27 +178,39 @@ class UserList extends Component {
                                         <TableCell align="center">{row.phoneNumber || "Empty"}</TableCell>
                                         <TableCell align="center">
                                             {(row.status == "Active") ?
-                                                <Button onClick={this.setStatus.bind(this, row, "Block")} color="secondary">
+                                                <Button
+                                                    onClick={this.setStatus.bind(this, row, "Block")}
+                                                    color="secondary">
                                                     Block
                                              </Button>
                                                 :
-                                                <Button onClick={this.setStatus.bind(this, row, "Active")} color="primary">
+                                                <Button
+                                                    onClick={this.setStatus.bind(this, row, "Active")}
+                                                    color="primary">
                                                     Active
                                             </Button>}
                                         </TableCell>
-                                        {/* <TableCell align="center">
+                                        <TableCell align="center">
                                             <Button
-                                                onClick={this.onpenChatBox.bind(this, row)} color="primary">
+                                                onClick={this.onpenChatBox.bind(this, row)}
+                                                color="primary">
                                                 Meesage
                                          </Button>
-                                        </TableCell> */}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <Button
+                                                onClick={this.deleteUser.bind(this, row)}
+                                                color="secondary">
+                                                Delete
+                                         </Button>
+                                        </TableCell>
                                     </TableRow>
                                 )
                             })}
                         </TableBody>
                     </Table>
                 </Paper>
-                {/* {(this.state.chatBoxShow) ?
+                {(this.state.chatBoxShow) ?
                     <div className="chatBoxContainer" >
                         <div className="headingContainer" >
                             <h5 style={{ color: "#ffffff" }} >{this.state.userForMesg}</h5>
@@ -172,6 +219,30 @@ class UserList extends Component {
                             </div>
                         </div>
                         <div className="messagelisContainer" >
+                            {messaageList.map((val, index) => {
+                                console.log(val)
+                                return (
+                                    <div
+                                        style={currentUser.uid == val.senderId ? {
+                                            width: "50%",
+                                            backgroundColor: "#512da7",
+                                            color: "#fff",
+                                            marginLeft: "45%",
+                                            textAlign: "center"
+                                        } : {
+                                                width: "50%",
+                                                backgroundColor: "#f3f3f3",
+                                                color: "#512da7",
+                                                marginLeft: "5%",
+                                                textAlign: "center"
+                                            }}
+                                        key={index} >
+                                        <p style={{ wordWrap: "break-word", padding: " 5px" }}>
+                                            {val.messageText}
+                                        </p>
+                                    </div>
+                                )
+                            })}
                         </div>
                         <div className="inputBoxContainer" >
                             <form
@@ -186,9 +257,7 @@ class UserList extends Component {
                                     className="messageInputText" />
                             </form>
                         </div>
-                    </div> : null} */}
-
-
+                    </div> : null}
 
             </div>
         );
